@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Keyboard scales</title>
+    <meta name="description" content="Mixer app - Written in Elm">
+    <meta name="author" content="Stephen Watkins">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/skeleton.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/png" href="images/favicon.png">
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="twelve columns">
+
+                <div id="elm-app"></div>
+
+            </div>
+        </div>
+    </div>
+    <div class='footer'>
+        <div class='footerContent'>
+            Written in <strong>Elm</strong> - <a href="http://elm-lang.org">www.elm-lang.org</a>
+        </div>
+    </div>
+
+    <script src="js/Main.js"></script>
+
+    <script>
+        var node = document.getElementById('elm-app');
+        var app = Elm.Main.embed(node);
+    </script>
+</body>
+
+</html>
