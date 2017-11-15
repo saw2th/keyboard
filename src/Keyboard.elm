@@ -2,45 +2,11 @@ module Keyboard exposing (..)
 
 import Array
 import Html.Attributes
+import KeyboardConstants exposing (..)
 import Notes exposing (..)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
 import WesternMusicData exposing (..)
-
-
-kbWhiteWidth =
-    80
-
-
-kbBlackWidth =
-    40
-
-
-kbHalfBlackWidth =
-    kbBlackWidth // 2
-
-
-kbWhiteHeight =
-    400
-
-
-kbBlackHeight =
-    280
-
-
-kbKeyPressRadius =
-    15
-
-
-type alias Keyboard =
-    { keys : Int
-    , firstNote : Note
-    , firstOctave : Octave
-    }
-
-
-kbStandardPiano =
-    Keyboard 88 "A" -1
 
 
 type KeyboardTypes
@@ -52,6 +18,7 @@ type alias NoteSpec =
     , note : Note
     , range : OctaveRange
     , octave : Octave
+    , mode : Mode
     }
 
 
@@ -75,20 +42,27 @@ type alias KeySpec =
 
 renderBoard : NoteSpec -> Svg msg
 renderBoard noteSpec =
+    let
+        renderedKeyboard =
+            if noteSpec.mode == scaleMode then
+                Notes.scale noteSpec.note noteSpec.octave noteSpec.formulaName noteSpec.range False |> renderKeys
+            else
+                Notes.chord noteSpec.note noteSpec.octave noteSpec.formulaName noteSpec.range False 0 |> renderKeys
+    in
     svg
-        [ width "1280"
+        [ width "880"
         , height "80"
-        , viewBox "0 0 7140 400"
+        , viewBox "0 0 4600 400"
         , fill "white"
         , stroke "black"
         , strokeWidth "3"
-        , Html.Attributes.style [ ( "padding-left", "20px" ) ]
+        , Html.Attributes.style [ ( "text-align", "center" ) ]
         ]
-        (Notes.scale noteSpec.note noteSpec.octave noteSpec.formulaName noteSpec.range False |> renderKeys)
+        renderedKeyboard
 
 
 
-{--offset is how far first note is from C1
+{--offset is how far first note is from C-1
 still some fiddle factors for discrepancy between C4 midi and C4 piano
 --}
 
@@ -140,8 +114,8 @@ renderWhiteKey : Int -> Svg msg
 renderWhiteKey xVal =
     rect
         [ class "piano-key white-key"
-        , stroke "#555555"
-        , fill "#FFFFF7"
+        , stroke kbWhiteStrokeColour
+        , fill kbWhiteKeyColour
         , x (xVal |> toString)
         , y "0"
         , width (kbWhiteWidth |> toString)
@@ -154,8 +128,8 @@ renderBlackKey : Int -> Svg msg
 renderBlackKey xVal =
     rect
         [ class "piano-key black-key"
-        , stroke "#979797"
-        , fill "#4B4B4B"
+        , stroke kbBlackStrokeColour
+        , fill kbBlackKeyColour
         , x (xVal |> toString)
         , y "0"
         , width (kbBlackWidth |> toString)
@@ -173,17 +147,17 @@ renderKeyPress midiNote =
         keyPressCoord =
             keyOffset midiNote offset
 
-        highestMidiNote =
-            Maybe.withDefault 0 (noteAndOctaveToMidiNoteNumber kbStandardPiano.firstNote kbStandardPiano.firstOctave) + kbStandardPiano.keys
-
         lowestMidiNote =
             Maybe.withDefault 0 (noteAndOctaveToMidiNoteNumber kbStandardPiano.firstNote kbStandardPiano.firstOctave)
+
+        highestMidiNote =
+            lowestMidiNote + kbStandardPiano.keys
     in
-    if midiNote >= lowestMidiNote && midiNote < highestMidiNote + 12 then
+    if midiNote >= lowestMidiNote && midiNote < highestMidiNote then
         circle
             [ class "piano-keypress"
-            , stroke "#979797"
-            , fill "#FF0000"
+            , stroke kbBlackStrokeColour
+            , fill kbKeyPressColour
             , cx (keyPressCoord.x |> toString)
             , cy (keyPressCoord.y |> toString)
             , r (kbKeyPressRadius |> toString)
@@ -220,9 +194,19 @@ positionInChromaticeScale midiNote =
     midiNote % 12
 
 
-octaveAboveC0 : Int -> Int
-octaveAboveC0 midiNote =
+octaveAboveCminus1 : Int -> Int
+octaveAboveCminus1 midiNote =
     midiNote // 12
+
+
+widthFromCminus1 : Int -> Int
+widthFromCminus1 midiNote =
+    let
+        lastOctaveWhite =
+            List.map keyWidthFromKeyColour (List.take (positionInChromaticeScale midiNote) keyPattern)
+                |> List.sum
+    in
+    octaveAboveCminus1 midiNote * 7 * kbWhiteWidth + lastOctaveWhite
 
 
 keyOffset : Int -> Int -> KeyPressCoord
@@ -231,12 +215,9 @@ keyOffset midiNote offset =
         whiteNote =
             positionInChromaticeScale midiNote |> isNoteWhite
 
-        sumKeyWidths =
-            List.map keyWidthFromKeyColour (List.take (positionInChromaticeScale midiNote) keyPattern)
-                |> List.sum
-
         xoffset =
-            sumKeyWidths
+            widthFromCminus1 midiNote
+                - widthFromCminus1 offset
                 + (kbWhiteWidth
                     // 2
                     - (if whiteNote then
@@ -245,9 +226,6 @@ keyOffset midiNote offset =
                         kbBlackWidth
                       )
                   )
-                + (octaveAboveC0 midiNote * kbWhiteWidth * 7)
-                + (offset - 3 * 7)
-                * kbWhiteWidth
 
         yoffset =
             if whiteNote then

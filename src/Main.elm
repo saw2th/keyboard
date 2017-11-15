@@ -342,9 +342,16 @@ view model =
         [ modeMatrixDiv model
         , selectionH1 model
         , noteMatrixDiv model
+        , octaveRangeSelect model
         , octaveMatrixDiv model
         , formulaMatrixDiv model
-        , octaveRangeSelect model
         , resultMatrixDiv model
-        , Keyboard.renderBoard { formulaName = model.formulaName, note = model.note, range = model.range, octave = model.octave }
+        , div
+            [ classList
+                [ ( "matrix", True )
+                , ( "result", True )
+                , ( "inline-block", False )
+                ]
+            ]
+            [ Keyboard.renderBoard { mode = model.mode, formulaName = model.formulaName, note = model.note, range = model.range, octave = model.octave } ]
         ]
