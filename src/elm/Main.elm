@@ -8,6 +8,7 @@ import Notes exposing (..)
 import WesternMusicData exposing (..)
 
 
+main : Program Never Model Msg
 main =
     Html.program
         { init = init

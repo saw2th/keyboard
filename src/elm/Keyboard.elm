@@ -177,6 +177,7 @@ keyPattern =
     [ True, False, True, False, True, True, False, True, False, True, False, True ]
 
 
+keyPatternArray : Array.Array Bool
 keyPatternArray =
     Array.fromList keyPattern
 
