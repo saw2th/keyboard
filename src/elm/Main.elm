@@ -61,19 +61,13 @@ subscriptions model =
 
 
 type Msg
-    = BPMChanged String
-    | MatrixChanged String String
+    = MatrixChanged String String
     | OctaveRangeChanged String
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        BPMChanged newBpm ->
-            ( { model | bpm = Result.withDefault 110 (String.toInt newBpm) }
-            , Cmd.none
-            )
-
         OctaveRangeChanged r ->
             let
                 newModel =
@@ -290,10 +284,17 @@ octaveMatrixDiv model =
 
 octaveRangeSelect : Model -> Html Msg
 octaveRangeSelect model =
-    div [ class "select-cell" ]
-        [ select [ onInput OctaveRangeChanged, name "Range", class "soflow" ]
-            -- pass the model range as first argument so the menu can display '3' on start up
-            (List.range 1 6 |> List.map (intToOption model.range))
+    div [ class "select-wrapper" ]
+        [ div [ class "select-row" ]
+            [ div [ class "select-cell-caption" ]
+                [ text "Octave Range :" ]
+            , div
+                [ class "select-cell" ]
+                [ select [ onInput OctaveRangeChanged, name "Range", class "soflow" ]
+                    -- pass the model range as first argument so the menu can display '3' on start up
+                    (List.range 1 6 |> List.map (intToOption model.range))
+                ]
+            ]
         ]
 
 
@@ -343,10 +344,10 @@ view model =
         [ modeMatrixDiv model
         , selectionH1 model
         , noteMatrixDiv model
-        , octaveRangeSelect model
         , octaveMatrixDiv model
         , formulaMatrixDiv model
         , resultMatrixDiv model
+        , octaveRangeSelect model
         , div
             [ classList
                 [ ( "matrix", True )

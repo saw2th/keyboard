@@ -50,13 +50,14 @@ renderBoard noteSpec =
                 Notes.chord noteSpec.note noteSpec.octave noteSpec.formulaName noteSpec.range False 0 |> renderKeys
     in
     svg
-        [ width "880"
+        [ width "830"
         , height "80"
-        , viewBox "0 0 4600 400"
+        , viewBox "0 0 4480 400"
+        , preserveAspectRatio "xMidYMid"
         , fill "white"
         , stroke "black"
         , strokeWidth "3"
-        , Html.Attributes.style [ ( "text-align", "center" ) ]
+        , Html.Attributes.style [ ( "margin-left", "75px" ) ]
         ]
         renderedKeyboard
 
