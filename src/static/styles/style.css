@@ -117,7 +117,7 @@ div.select-cell-caption {
 
 #audio-banner {
   max-width: 860px;
-  margin: auto;
-  padding-top: 10px; }
+  margin: -5px 0 0 10px;
+  padding-top: 0; }
   #audio-banner button {
     background-color: white; }

@@ -14,6 +14,9 @@
     "build": "webpack",
     "reinstall": "npm i rimraf && rimraf node_modules && npm uninstall -g elm && npm i -g elm && npm i && elm package install"
   },
+  "dependencies": {
+	"tone": "^0.12.0"
+  },
   "devDependencies": {
     "autoprefixer": "^6.7.7",
     "copy-webpack-plugin": "^4.0.1",
